@@ -1,0 +1,12 @@
+{
+  "name": "SimpleChatWithSockets",
+  "description": "An Example chat app using sockets",
+  "version": "0.0.1",
+  "scripts" : {
+    "start" : "start.js"
+  },
+  "dependencies": {
+    "socket.io": "",
+    "node-uuid" : ""
+  }
+}
