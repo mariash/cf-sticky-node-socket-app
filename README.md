@@ -1,4 +1,4 @@
-## Simple app for Cloud Foundry that uses sockets and sticky sessions ##
+## Simple Node.js app for Cloud Foundry that uses sockets and sticky sessions ##
 
 Sticky sessions are provided with JSESSIONID cookie variable and using RedisStore.
 
