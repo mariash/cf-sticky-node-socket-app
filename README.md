@@ -4,3 +4,5 @@ Sticky sessions are provided with JSESSIONID cookie variable and using RedisStor
 
     vmc push app-name
     vmc instances app-name 2
+
+[http://sticky-node-socket-app.cloudfoundry.com](example on Cloud Foundry with 2 instances)
