@@ -11,9 +11,9 @@ else {
   var dbData = { "port" : 6379, "hostname" : "localhost" };
 }
 
-var pub = redis.createClient(dbData["port"], dbData["hostname"]);
-var sub = redis.createClient(dbData["port"], dbData["hostname"]);
-var store = redis.createClient(dbData["port"], dbData["hostname"]);
+var pub = redis.createClient(dbData["port"], dbData["hostname"]),
+    sub = redis.createClient(dbData["port"], dbData["hostname"]),
+    store = redis.createClient(dbData["port"], dbData["hostname"]);
 
 if (dbData["password"]) {
   pub.auth(dbData["password"], function(){console.log("connected! pub")});
@@ -22,12 +22,12 @@ if (dbData["password"]) {
 }
 
 var app = require('http').createServer(handler),
-io = require('socket.io').listen(app);
+    io = require('socket.io').listen(app);
 
 io.configure(function() {
-  io.set('log level', 3);
+  io.set('log level', 1);
   io.set("transports", ["xhr-polling"]);
-  io.set('max reconnection attempts', 100);
+
   var RedisStore = require('socket.io/lib/stores/redis');
   io.set('store', new RedisStore({redisPub:pub, redisSub:sub, redisClient:store}));
 });
@@ -48,16 +48,26 @@ function handler (req, res) {
     filename = '/js/client.js';
   else
     filename = '/index.html';
+
+  cookies = {}
+  req.headers.cookie && req.headers.cookie.split(';').forEach(function( cookie ) {
+    var parts = cookie.split('=');
+    cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
+  });
+
   fs.readFile(__dirname + filename,
               function (err, data) {
                 if (err) {
                   res.writeHead(500);
                   return res.end('Error loading index.html');
                 }
-                res.writeHead(200, {
-                  'Set-Cookie': 'JSESSIONID=' + uuid.v4(), // provides sticky session
-                  'Content-Type': 'text/html'
-                });
+                headers = {'Content-Type': 'text/html'};
+
+                // provide sticky session
+                if (filename == '/index.html' && cookies['JSESSIONID'] == undefined)
+                  headers['Set-Cookie'] = 'JSESSIONID=' + uuid.v4();
+
+                res.writeHead(200, headers);
                 res.end(data);
               });
 }
